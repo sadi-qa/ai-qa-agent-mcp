@@ -2,6 +2,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+import {
+  latestTestRunResourceUri,
+  readLatestTestRunResource,
+} from "./resources/latest-test-run-resource.js";
 import { executeAnalyzeTestFailures } from "./tools/analyze-test-failures-tool.js";
 import { executeGenerateBugReport } from "./tools/generate-bug-report-tool.js";
 import { executeGenerateQaSummary } from "./tools/generate-qa-summary-tool.js";
@@ -12,6 +16,19 @@ const server = new McpServer({
   name: "ai-qa-agent-mcp",
   version: "0.1.0",
 });
+
+server.registerResource(
+  "latest_test_run",
+  latestTestRunResourceUri,
+  {
+    title: "Latest Test Run",
+    description:
+      "Read the newest supported Playwright JSON test run from the approved reports directory as normalized QA execution data.",
+    mimeType: "application/json",
+  },
+  async (uri) =>
+    readLatestTestRunResource(uri.toString()),
+);
 
 server.registerTool(
   "list_test_runs",
