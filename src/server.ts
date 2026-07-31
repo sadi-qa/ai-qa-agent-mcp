@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+import { createReleaseQualityReportPrompt } from "./prompts/release-quality-report-prompt.js";
 import {
   latestTestRunResourceUri,
   readLatestTestRunResource,
@@ -28,6 +29,27 @@ server.registerResource(
   },
   async (uri) =>
     readLatestTestRunResource(uri.toString()),
+);
+
+server.registerPrompt(
+  "prepare_release_quality_report",
+  {
+    title: "Prepare Release Quality Report",
+    description:
+      "Guide an AI client through analyzing test evidence and preparing an advisory release-quality report.",
+    argsSchema: {
+      reportPath: z
+        .string()
+        .min(1)
+        .describe(
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json.",
+        ),
+    },
+  },
+  ({ reportPath }) =>
+    createReleaseQualityReportPrompt({
+      reportPath,
+    }),
 );
 
 server.registerTool(
