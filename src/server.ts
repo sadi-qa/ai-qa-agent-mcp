@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+import { executeAnalyzeTestFailures } from "./tools/analyze-test-failures-tool.js";
 import { executeGetTestRunSummary } from "./tools/get-test-run-summary-tool.js";
 import { executeListTestRuns } from "./tools/list-test-runs-tool.js";
 
@@ -88,6 +89,54 @@ server.registerTool(
           {
             type: "text",
             text: `Unable to summarize test run: ${message}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "analyze_test_failures",
+  {
+    title: "Analyze Test Failures",
+    description:
+      "Analyze failed, timed-out, and flaky tests from an approved Playwright JSON report and group them by probable failure category.",
+    inputSchema: {
+      reportPath: z
+        .string()
+        .min(1)
+        .describe(
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json.",
+        ),
+    },
+  },
+  async ({ reportPath }) => {
+    try {
+      const result = await executeAnalyzeTestFailures({
+        reportPath,
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2),
+          },
+        ],
+      };
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : String(error);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Unable to analyze test failures: ${message}`,
           },
         ],
         isError: true,
