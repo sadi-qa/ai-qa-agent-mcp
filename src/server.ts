@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { executeAnalyzeTestFailures } from "./tools/analyze-test-failures-tool.js";
 import { executeGenerateBugReport } from "./tools/generate-bug-report-tool.js";
+import { executeGenerateQaSummary } from "./tools/generate-qa-summary-tool.js";
 import { executeGetTestRunSummary } from "./tools/get-test-run-summary-tool.js";
 import { executeListTestRuns } from "./tools/list-test-runs-tool.js";
 
@@ -193,6 +194,54 @@ server.registerTool(
           {
             type: "text",
             text: `Unable to generate bug report: ${message}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "generate_qa_summary",
+  {
+    title: "Generate QA Summary",
+    description:
+      "Generate a complete QA execution summary containing metrics, failure analysis, quality risks, Markdown output, and an advisory release recommendation.",
+    inputSchema: {
+      reportPath: z
+        .string()
+        .min(1)
+        .describe(
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json.",
+        ),
+    },
+  },
+  async ({ reportPath }) => {
+    try {
+      const result = await executeGenerateQaSummary({
+        reportPath,
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2),
+          },
+        ],
+      };
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : String(error);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Unable to generate QA summary: ${message}`,
           },
         ],
         isError: true,
