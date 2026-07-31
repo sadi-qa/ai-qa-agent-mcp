@@ -9,6 +9,15 @@ import type {
 import type { TestRun } from "../types/test-result.js";
 import type { TestRunSummary } from "../types/test-run-summary.js";
 
+function formatTestCount(
+  count: number,
+  descriptor: string,
+): string {
+  const testLabel = count === 1 ? "test" : "tests";
+
+  return `${count} ${descriptor} ${testLabel}`;
+}
+
 function identifyRisks(
   summary: TestRunSummary,
 ): QualityRisk[] {
@@ -22,8 +31,8 @@ function identifyRisks(
       level: "high",
       title: "Failed test execution",
       description:
-        `${summary.failedTests} failed and ` +
-        `${summary.timedOutTests} timed-out tests require investigation.`,
+        `${formatTestCount(summary.failedTests, "failed")} and ` +
+        `${formatTestCount(summary.timedOutTests, "timed-out")} require investigation.`,
     });
   }
 
@@ -32,7 +41,8 @@ function identifyRisks(
       level: "medium",
       title: "Flaky test behavior",
       description:
-        `${summary.flakyTests} tests passed only after retry or showed unstable behavior.`,
+        `${formatTestCount(summary.flakyTests, "flaky")} ` +
+        "passed only after retry or showed unstable behavior.",
     });
   }
 
@@ -41,7 +51,8 @@ function identifyRisks(
       level: "low",
       title: "Skipped test coverage",
       description:
-        `${summary.skippedTests} tests were skipped and did not provide execution evidence.`,
+        `${formatTestCount(summary.skippedTests, "skipped")} ` +
+        "did not provide execution evidence.",
     });
   }
 

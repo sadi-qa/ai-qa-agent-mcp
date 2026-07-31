@@ -45,14 +45,20 @@ describe("createQaExecutionSummary", () => {
         expect.objectContaining({
           level: "high",
           title: "Failed test execution",
+          description:
+            "1 failed test and 0 timed-out tests require investigation.",
         }),
         expect.objectContaining({
           level: "medium",
           title: "Flaky test behavior",
+          description:
+            "1 flaky test passed only after retry or showed unstable behavior.",
         }),
         expect.objectContaining({
           level: "low",
           title: "Skipped test coverage",
+          description:
+            "1 skipped test did not provide execution evidence.",
         }),
       ]),
     );
@@ -63,6 +69,14 @@ describe("createQaExecutionSummary", () => {
 
     expect(summary.markdown).toContain(
       "**NO-GO**",
+    );
+
+    expect(summary.markdown).toContain(
+      "1 flaky test passed only after retry or showed unstable behavior.",
+    );
+
+    expect(summary.markdown).toContain(
+      "1 skipped test did not provide execution evidence.",
     );
 
     expect(summary.disclaimer).toContain(
@@ -100,6 +114,10 @@ describe("createQaExecutionSummary", () => {
     expect(summary.risks).toEqual([]);
     expect(summary.metrics.passRate).toBe(100);
     expect(summary.markdown).toContain("**GO**");
+
+    expect(summary.markdown).toContain(
+      "All executed tests passed without failures, timeouts, flaky results, or skipped coverage.",
+    );
   });
 
   it("recommends GO WITH RISK when flaky tests exist without blocking failures", () => {
@@ -143,6 +161,8 @@ describe("createQaExecutionSummary", () => {
         expect.objectContaining({
           level: "medium",
           title: "Flaky test behavior",
+          description:
+            "1 flaky test passed only after retry or showed unstable behavior.",
         }),
       ]),
     );
