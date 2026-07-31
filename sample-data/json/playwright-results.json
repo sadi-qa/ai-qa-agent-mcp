@@ -1,0 +1,131 @@
+{
+  "config": {
+    "rootDir": "D:/QA-Portfolio-Projects/playwright-typescript-e2e-framework/tests",
+    "workers": 2,
+    "projects": [
+      {
+        "id": "chromium",
+        "name": "chromium"
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "Authentication tests",
+      "file": "tests/auth/login.spec.ts",
+      "specs": [
+        {
+          "title": "valid user can log in",
+          "ok": true,
+          "tests": [
+            {
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "expectedStatus": "passed",
+              "status": "expected",
+              "results": [
+                {
+                  "status": "passed",
+                  "duration": 1250,
+                  "retry": 0,
+                  "errors": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "locked user sees an error message",
+          "ok": false,
+          "tests": [
+            {
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "expectedStatus": "passed",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 2180,
+                  "retry": 0,
+                  "errors": [
+                    {
+                      "message": "Expected error message to contain \"locked out\", but received \"Invalid credentials\".",
+                      "stack": "Error: expect(locator).toContainText failed at tests/auth/login.spec.ts:42:31"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Checkout tests",
+      "file": "tests/checkout/checkout.spec.ts",
+      "specs": [
+        {
+          "title": "guest checkout is skipped",
+          "ok": true,
+          "tests": [
+            {
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "expectedStatus": "skipped",
+              "status": "skipped",
+              "results": [
+                {
+                  "status": "skipped",
+                  "duration": 0,
+                  "retry": 0,
+                  "errors": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "customer completes checkout",
+          "ok": true,
+          "tests": [
+            {
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "expectedStatus": "passed",
+              "status": "flaky",
+              "results": [
+                {
+                  "status": "timedOut",
+                  "duration": 30000,
+                  "retry": 0,
+                  "errors": [
+                    {
+                      "message": "Test timeout of 30000ms exceeded while waiting for checkout confirmation.",
+                      "stack": "TimeoutError: locator.waitFor at tests/checkout/checkout.spec.ts:68:25"
+                    }
+                  ]
+                },
+                {
+                  "status": "passed",
+                  "duration": 3420,
+                  "retry": 1,
+                  "errors": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-30T18:30:00.000Z",
+    "duration": 39050,
+    "expected": 1,
+    "skipped": 1,
+    "unexpected": 1,
+    "flaky": 1
+  }
+}

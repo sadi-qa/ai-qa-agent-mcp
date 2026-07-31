@@ -1,0 +1,43 @@
+{
+  "name": "ai-qa-agent-mcp",
+  "version": "0.1.0",
+  "description": "An MCP server that analyzes Playwright test results and generates QA insights, execution summaries, and draft bug reports.",
+  "private": true,
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "software-testing",
+    "qa-automation",
+    "playwright",
+    "typescript",
+    "ai-agent"
+  ],
+  "author": "Saiduzzaman Sadi",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "@vitest/coverage-v8": "^4.1.10",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.4.3"
+  }
+}
