@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 
 import { executeAnalyzeTestFailures } from "./tools/analyze-test-failures-tool.js";
+import { executeGenerateBugReport } from "./tools/generate-bug-report-tool.js";
 import { executeGetTestRunSummary } from "./tools/get-test-run-summary-tool.js";
 import { executeListTestRuns } from "./tools/list-test-runs-tool.js";
 
@@ -137,6 +138,61 @@ server.registerTool(
           {
             type: "text",
             text: `Unable to analyze test failures: ${message}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "generate_bug_report",
+  {
+    title: "Generate Bug Report",
+    description:
+      "Generate a structured draft bug report for one failed, timed-out, or flaky test from an approved Playwright JSON report.",
+    inputSchema: {
+      reportPath: z
+        .string()
+        .min(1)
+        .describe(
+          "Path to the report relative to the approved reports directory.",
+        ),
+      testId: z
+        .string()
+        .min(1)
+        .describe(
+          "The normalized test ID returned by the failure-analysis tool.",
+        ),
+    },
+  },
+  async ({ reportPath, testId }) => {
+    try {
+      const result = await executeGenerateBugReport({
+        reportPath,
+        testId,
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2),
+          },
+        ],
+      };
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : String(error);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Unable to generate bug report: ${message}`,
           },
         ],
         isError: true,
