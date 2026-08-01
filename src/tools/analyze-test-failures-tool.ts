@@ -1,11 +1,12 @@
 import { stat } from "node:fs/promises";
-import { extname, relative } from "node:path";
+import { relative } from "node:path";
 
 import { applicationConfig } from "../config/application-config.js";
-import { parsePlaywrightJsonReport } from "../parsers/playwright-json-parser.js";
 import { analyzeFailures } from "../services/failure-analysis-service.js";
 import { resolveSafePath } from "../services/safe-path-service.js";
+import { parseTestRunReport } from "../services/test-run-parser-service.js";
 import type { FailureAnalysis } from "../types/failure-analysis.js";
+import type { TestRun } from "../types/test-result.js";
 
 export interface AnalyzeTestFailuresInput {
   reportPath: string;
@@ -14,7 +15,7 @@ export interface AnalyzeTestFailuresInput {
 export interface AnalyzeTestFailuresResult {
   reportPath: string;
   runId: string;
-  format: "playwright-json";
+  format: TestRun["format"];
   startedAt?: string;
   analysis: FailureAnalysis;
   disclaimer: string;
@@ -27,14 +28,6 @@ export async function executeAnalyzeTestFailures(
     applicationConfig.reportsDirectory,
     input.reportPath,
   );
-
-  const extension = extname(safeReportPath).toLowerCase();
-
-  if (extension !== ".json") {
-    throw new Error(
-      "Unsupported report format. Only Playwright JSON reports are currently supported.",
-    );
-  }
 
   const fileStats = await stat(safeReportPath);
 
@@ -54,7 +47,7 @@ export async function executeAnalyzeTestFailures(
   }
 
   const testRun =
-    await parsePlaywrightJsonReport(safeReportPath);
+    await parseTestRunReport(safeReportPath);
 
   const analysis = analyzeFailures(testRun.tests);
 
@@ -64,7 +57,7 @@ export async function executeAnalyzeTestFailures(
       safeReportPath,
     ),
     runId: testRun.runId,
-    format: "playwright-json",
+    format: testRun.format,
     ...(testRun.startedAt
       ? { startedAt: testRun.startedAt }
       : {}),

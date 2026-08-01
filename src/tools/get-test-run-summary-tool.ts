@@ -1,10 +1,11 @@
 import { stat } from "node:fs/promises";
-import { extname, relative } from "node:path";
+import { relative } from "node:path";
 
 import { applicationConfig } from "../config/application-config.js";
-import { parsePlaywrightJsonReport } from "../parsers/playwright-json-parser.js";
 import { resolveSafePath } from "../services/safe-path-service.js";
+import { parseTestRunReport } from "../services/test-run-parser-service.js";
 import { createTestRunSummary } from "../services/test-run-summary-service.js";
+import type { TestRun } from "../types/test-result.js";
 import type { TestRunSummary } from "../types/test-run-summary.js";
 
 export interface GetTestRunSummaryInput {
@@ -14,7 +15,7 @@ export interface GetTestRunSummaryInput {
 export interface GetTestRunSummaryResult {
   reportPath: string;
   runId: string;
-  format: "playwright-json";
+  format: TestRun["format"];
   startedAt?: string;
   summary: TestRunSummary;
 }
@@ -26,14 +27,6 @@ export async function executeGetTestRunSummary(
     applicationConfig.reportsDirectory,
     input.reportPath,
   );
-
-  const extension = extname(safeReportPath).toLowerCase();
-
-  if (extension !== ".json") {
-    throw new Error(
-      "Unsupported report format. Only Playwright JSON reports are currently supported.",
-    );
-  }
 
   const fileStats = await stat(safeReportPath);
 
@@ -53,7 +46,7 @@ export async function executeGetTestRunSummary(
   }
 
   const testRun =
-    await parsePlaywrightJsonReport(safeReportPath);
+    await parseTestRunReport(safeReportPath);
 
   const summary = createTestRunSummary(testRun);
 
@@ -63,7 +56,7 @@ export async function executeGetTestRunSummary(
       safeReportPath,
     ),
     runId: testRun.runId,
-    format: "playwright-json",
+    format: testRun.format,
     ...(testRun.startedAt
       ? { startedAt: testRun.startedAt }
       : {}),

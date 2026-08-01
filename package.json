@@ -1,7 +1,7 @@
 {
   "name": "ai-qa-agent-mcp",
   "version": "0.1.0",
-  "description": "An MCP server that analyzes Playwright test results and generates QA insights, execution summaries, and draft bug reports.",
+  "description": "An MCP server that analyzes Playwright JSON and JUnit XML test results and generates QA insights, execution summaries, and draft bug reports.",
   "private": true,
   "type": "module",
   "main": "dist/server.js",
@@ -20,7 +20,10 @@
     "model-context-protocol",
     "software-testing",
     "qa-automation",
+    "test-results",
     "playwright",
+    "junit",
+    "xml",
     "typescript",
     "ai-agent"
   ],
@@ -38,6 +41,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "fast-xml-parser": "^5.10.1",
     "zod": "^4.4.3"
   }
 }

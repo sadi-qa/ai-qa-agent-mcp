@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites
+  name="QA Automation Test Results"
+  tests="4"
+  failures="1"
+  errors="1"
+  skipped="1"
+  time="36.850"
+>
+  <testsuite
+    name="Chromium Test Suite"
+    tests="4"
+    failures="1"
+    errors="1"
+    skipped="1"
+    time="36.850"
+    timestamp="2026-07-30T18:30:00.000Z"
+  >
+    <testcase
+      name="valid user can log in"
+      classname="tests.auth.login.spec"
+      file="tests/auth/login.spec.ts"
+      project="chromium"
+      time="1.250"
+    />
+
+    <testcase
+      name="locked user sees an error message"
+      classname="tests.auth.login.spec"
+      file="tests/auth/login.spec.ts"
+      project="chromium"
+      time="2.180"
+    >
+      <failure
+        type="AssertionError"
+        message="Expected error message to contain &quot;locked out&quot;, but received &quot;Invalid credentials&quot;."
+      >Error: expect(locator).toContainText failed at tests/auth/login.spec.ts:42:31</failure>
+    </testcase>
+
+    <testcase
+      name="guest checkout is skipped"
+      classname="tests.checkout.checkout.spec"
+      file="tests/checkout/checkout.spec.ts"
+      project="chromium"
+      time="0"
+    >
+      <skipped message="Guest checkout is not enabled in this environment." />
+    </testcase>
+
+    <testcase
+      name="customer completes checkout"
+      classname="tests.checkout.checkout.spec"
+      file="tests/checkout/checkout.spec.ts"
+      project="chromium"
+      time="33.420"
+    >
+      <error
+        type="TimeoutError"
+        message="Test timeout of 30000ms exceeded while waiting for checkout confirmation."
+      >TimeoutError: locator.waitFor at tests/checkout/checkout.spec.ts:68:25</error>
+    </testcase>
+  </testsuite>
+</testsuites>
