@@ -56,7 +56,7 @@ Both formats are converted into one normalized internal test-result model before
 - JUnit XML
 - MCP Inspector
 - Codex CLI
-- GitHub Actions planned for CI validation
+- GitHub Actions
 
 ## Architecture
 
@@ -91,6 +91,7 @@ Playwright JSON Reports     JUnit XML Reports
 ai-qa-agent-mcp/
 ├── .github/
 │   └── workflows/
+│       └── qa-validation.yml
 ├── docs/
 ├── reports/
 ├── sample-data/
@@ -155,6 +156,21 @@ Run type checking, automated tests, and the production build:
 npm run check
 ```
 
+## Continuous Integration
+
+The `QA Validation` GitHub Actions workflow runs for:
+
+- Pull requests targeting `main`
+- Pushes to `main`
+- Manual workflow executions
+
+The workflow uses Node.js 24 and runs:
+
+```bash
+npm ci
+npm run check
+```
+
 ## Example Report Paths
 
 Paths must be relative to the configured approved reports directory.
@@ -195,4 +211,4 @@ The project currently includes automated coverage for:
 
 Version `0.1.0` is under active development.
 
-Implemented features include five MCP tools, one MCP resource, one MCP prompt, Playwright JSON support, JUnit XML support, and automated unit-test coverage.
+Implemented features include five MCP tools, one MCP resource, one MCP prompt, Playwright JSON support, JUnit XML support, automated unit-test coverage, and GitHub Actions CI validation.
