@@ -109,9 +109,11 @@ ai-qa-agent-mcp/
 │   ├── services/
 │   ├── tools/
 │   ├── types/
+│   ├── mcp-server.ts
 │   └── server.ts
 ├── tests/
 │   ├── integration/
+│   │   └── mcp-server.integration.test.ts
 │   └── unit/
 ├── .gitignore
 ├── package.json
@@ -156,6 +158,30 @@ Run type checking, automated tests, and the production build:
 
 ```bash
 npm run check
+```
+
+## MCP Integration Testing
+
+The integration suite creates an MCP server and client connected through the SDK's in-memory transport.
+
+It verifies that an MCP client can:
+
+- Discover all five registered tools
+- Call the JUnit test-run summary tool
+- Discover and read `test-run://latest`
+- Discover and retrieve `prepare_release_quality_report`
+- Exchange normalized QA data through the MCP protocol
+
+The reusable MCP server is created by:
+
+```text
+src/mcp-server.ts
+```
+
+The production stdio entry point remains:
+
+```text
+src/server.ts
 ```
 
 ## Continuous Integration
@@ -208,9 +234,20 @@ The project currently includes automated coverage for:
 - QA-summary generation
 - Latest-test-run resource handling
 - Safe file-path validation
+- MCP tool discovery and invocation
+- MCP resource discovery and reading
+- MCP prompt discovery and retrieval
+
+Current validation result:
+
+```text
+17 test files passed
+53 tests passed
+Production build passed
+```
 
 ## Current Status
 
 Version `0.1.0` is under active development.
 
-Implemented features include five MCP tools, one MCP resource, one MCP prompt, Playwright JSON support, JUnit XML support, automated unit-test coverage, and GitHub Actions CI validation.
+Implemented features include five MCP tools, one MCP resource, one MCP prompt, Playwright JSON support, JUnit XML support, unit and integration test coverage, and GitHub Actions CI validation.
