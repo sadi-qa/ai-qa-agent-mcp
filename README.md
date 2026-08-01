@@ -1,5 +1,7 @@
 # AI QA Agent MCP
 
+[![QA Validation](https://github.com/sadi-qa/ai-qa-agent-mcp/actions/workflows/qa-validation.yml/badge.svg)](https://github.com/sadi-qa/ai-qa-agent-mcp/actions/workflows/qa-validation.yml)
+
 A TypeScript-based Model Context Protocol server that analyzes Playwright JSON and JUnit XML test results and provides structured QA insights to AI clients.
 
 ## Project Goal
