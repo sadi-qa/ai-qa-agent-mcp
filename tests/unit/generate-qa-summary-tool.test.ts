@@ -144,8 +144,8 @@ describe("executeGenerateQaSummary", () => {
 
     expect(
       junitResult.qaSummary.markdown,
-    ).toContain(
-      "Report: junit\\junit-results.xml",
+    ).toMatch(
+      /Report: junit[\\/]junit-results\.xml/,
     );
 
     expect(
