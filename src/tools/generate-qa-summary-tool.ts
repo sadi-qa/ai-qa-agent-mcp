@@ -1,11 +1,12 @@
 import { stat } from "node:fs/promises";
-import { extname, relative } from "node:path";
+import { relative } from "node:path";
 
 import { applicationConfig } from "../config/application-config.js";
-import { parsePlaywrightJsonReport } from "../parsers/playwright-json-parser.js";
 import { createQaExecutionSummary } from "../services/qa-summary-service.js";
 import { resolveSafePath } from "../services/safe-path-service.js";
+import { parseTestRunReport } from "../services/test-run-parser-service.js";
 import type { QaExecutionSummary } from "../types/qa-summary.js";
+import type { TestRun } from "../types/test-result.js";
 
 export interface GenerateQaSummaryInput {
   reportPath: string;
@@ -14,7 +15,7 @@ export interface GenerateQaSummaryInput {
 export interface GenerateQaSummaryResult {
   reportPath: string;
   runId: string;
-  format: "playwright-json";
+  format: TestRun["format"];
   startedAt?: string;
   qaSummary: QaExecutionSummary;
 }
@@ -26,14 +27,6 @@ export async function executeGenerateQaSummary(
     applicationConfig.reportsDirectory,
     input.reportPath,
   );
-
-  const extension = extname(safeReportPath).toLowerCase();
-
-  if (extension !== ".json") {
-    throw new Error(
-      "Unsupported report format. Only Playwright JSON reports are currently supported.",
-    );
-  }
 
   const fileStats = await stat(safeReportPath);
 
@@ -53,7 +46,7 @@ export async function executeGenerateQaSummary(
   }
 
   const testRun =
-    await parsePlaywrightJsonReport(safeReportPath);
+    await parseTestRunReport(safeReportPath);
 
   const normalizedReportPath = relative(
     applicationConfig.reportsDirectory,
@@ -68,7 +61,7 @@ export async function executeGenerateQaSummary(
   return {
     reportPath: normalizedReportPath,
     runId: testRun.runId,
-    format: "playwright-json",
+    format: testRun.format,
     ...(testRun.startedAt
       ? { startedAt: testRun.startedAt }
       : {}),

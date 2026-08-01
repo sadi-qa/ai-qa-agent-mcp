@@ -40,6 +40,41 @@ describe("executeGetTestRunSummary", () => {
     });
   });
 
+  it("returns summary metrics for a JUnit XML report", async () => {
+    const result = await executeGetTestRunSummary({
+      reportPath: "junit/junit-results.xml",
+    });
+
+    expect(result.reportPath).toContain(
+      "junit",
+    );
+
+    expect(result.runId).toContain(
+      "junit-results.xml",
+    );
+
+    expect(result.format).toBe("junit");
+
+    expect(result.startedAt).toBe(
+      "2026-07-30T18:30:00.000Z",
+    );
+
+    expect(result.summary).toEqual({
+      totalTests: 4,
+      passedTests: 1,
+      failedTests: 1,
+      skippedTests: 1,
+      timedOutTests: 1,
+      flakyTests: 0,
+      executedTests: 3,
+      successfulTests: 1,
+      passRate: 33.33,
+      failureRate: 66.67,
+      skipRate: 25,
+      durationMs: 36850,
+    });
+  });
+
   it("rejects paths outside the approved directory", async () => {
     await expect(
       executeGetTestRunSummary({
@@ -47,16 +82,6 @@ describe("executeGetTestRunSummary", () => {
       }),
     ).rejects.toThrow(
       "Access denied: requested path is outside the approved directory.",
-    );
-  });
-
-  it("rejects unsupported report formats", async () => {
-    await expect(
-      executeGetTestRunSummary({
-        reportPath: "junit/results.xml",
-      }),
-    ).rejects.toThrow(
-      "Unsupported report format. Only Playwright JSON reports are currently supported.",
     );
   });
 });

@@ -1,10 +1,14 @@
+import { relative } from "node:path";
+
 import type { ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import { describe, expect, it } from "vitest";
 
+import { applicationConfig } from "../../src/config/application-config.js";
 import {
   latestTestRunResourceUri,
   readLatestTestRunResource,
 } from "../../src/resources/latest-test-run-resource.js";
+import { listTestRunFiles } from "../../src/services/test-run-file-service.js";
 
 function getTextResourceContent(
   result: ReadResourceResult,
@@ -30,7 +34,19 @@ function getTextResourceContent(
 }
 
 describe("readLatestTestRunResource", () => {
-  it("returns the latest normalized Playwright test run", async () => {
+  it("returns the latest normalized supported test run", async () => {
+    const availableFiles = await listTestRunFiles(
+      applicationConfig.reportsDirectory,
+    );
+
+    const latestFile = availableFiles[0];
+
+    if (!latestFile) {
+      throw new Error(
+        "Expected at least one supported test report.",
+      );
+    }
+
     const result =
       await readLatestTestRunResource();
 
@@ -53,7 +69,7 @@ describe("readLatestTestRunResource", () => {
       modifiedAt: string;
       sizeBytes: number;
       runId: string;
-      format: string;
+      format: "playwright-json" | "junit";
       startedAt?: string;
       durationMs: number;
       tests: Array<{
@@ -62,36 +78,60 @@ describe("readLatestTestRunResource", () => {
       }>;
     };
 
-    expect(resourceData.reportPath).toMatch(
-      /json[\\/]playwright-results\.json/,
+    const expectedReportPath = relative(
+      applicationConfig.reportsDirectory,
+      latestFile.filePath,
     );
 
-    expect(resourceData.modifiedAt).toBeTruthy();
-    expect(resourceData.sizeBytes).toBeGreaterThan(0);
+    expect(resourceData.reportPath).toBe(
+      expectedReportPath,
+    );
 
-    expect(resourceData.runId).toBe(
-      "playwright-results.json-2026-07-30T18:30:00.000Z",
+    expect(resourceData.modifiedAt).toBe(
+      latestFile.modifiedAt,
+    );
+
+    expect(resourceData.sizeBytes).toBe(
+      latestFile.sizeBytes,
+    );
+
+    expect(resourceData.runId).toContain(
+      latestFile.fileName,
     );
 
     expect(resourceData.format).toBe(
-      "playwright-json",
+      latestFile.format,
     );
 
     expect(resourceData.startedAt).toBe(
       "2026-07-30T18:30:00.000Z",
     );
 
-    expect(resourceData.durationMs).toBe(39050);
     expect(resourceData.tests).toHaveLength(4);
 
-    expect(
-      resourceData.tests.map((test) => test.status),
-    ).toEqual([
-      "passed",
-      "failed",
-      "skipped",
-      "flaky",
-    ]);
+    const testStatuses = resourceData.tests.map(
+      (test) => test.status,
+    );
+
+    if (resourceData.format === "junit") {
+      expect(resourceData.durationMs).toBe(36850);
+
+      expect(testStatuses).toEqual([
+        "passed",
+        "failed",
+        "skipped",
+        "timedOut",
+      ]);
+    } else {
+      expect(resourceData.durationMs).toBe(39050);
+
+      expect(testStatuses).toEqual([
+        "passed",
+        "failed",
+        "skipped",
+        "flaky",
+      ]);
+    }
 
     expect(resourceData.tests).toEqual(
       expect.arrayContaining([
@@ -101,7 +141,6 @@ describe("readLatestTestRunResource", () => {
         }),
         expect.objectContaining({
           id: "tests/checkout/checkout.spec.ts::customer completes checkout::chromium",
-          status: "flaky",
         }),
       ]),
     );

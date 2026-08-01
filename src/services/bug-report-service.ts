@@ -6,8 +6,8 @@ import type {
   BugSeverity,
 } from "../types/bug-report.js";
 import type {
-  FailureCategory,
   AnalyzedFailure,
+  FailureCategory,
 } from "../types/failure-analysis.js";
 import type {
   NormalizedTestResult,
@@ -99,10 +99,12 @@ export function createBugReportDraft(
   }
 
   const analyzedFailure = findAnalyzedFailure(test);
+
   const severity = determineSeverity(
     analyzedFailure.category,
     test.status,
   );
+
   const priority = determinePriority(severity);
   const primaryError = test.errors[0];
 

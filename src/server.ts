@@ -24,7 +24,7 @@ server.registerResource(
   {
     title: "Latest Test Run",
     description:
-      "Read the newest supported Playwright JSON test run from the approved reports directory as normalized QA execution data.",
+      "Read the newest supported Playwright JSON or JUnit XML test run from the approved reports directory as normalized QA execution data.",
     mimeType: "application/json",
   },
   async (uri) =>
@@ -42,7 +42,7 @@ server.registerPrompt(
         .string()
         .min(1)
         .describe(
-          "Path to the report relative to the approved reports directory, such as json/playwright-results.json.",
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json or junit/junit-results.xml.",
         ),
     },
   },
@@ -57,7 +57,7 @@ server.registerTool(
   {
     title: "List Test Runs",
     description:
-      "Find available Playwright JSON and JUnit test-result files in the approved reports directory.",
+      "Find available Playwright JSON and JUnit XML test-result files in the approved reports directory.",
   },
   async () => {
     try {
@@ -95,13 +95,13 @@ server.registerTool(
   {
     title: "Get Test Run Summary",
     description:
-      "Read an approved Playwright JSON report and calculate pass, failure, skip, timeout, and flaky-test metrics.",
+      "Read an approved Playwright JSON or JUnit XML report and calculate pass, failure, skip, timeout, and flaky-test metrics.",
     inputSchema: {
       reportPath: z
         .string()
         .min(1)
         .describe(
-          "Path to the report relative to the approved reports directory, such as json/playwright-results.json.",
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json or junit/junit-results.xml.",
         ),
     },
   },
@@ -143,13 +143,13 @@ server.registerTool(
   {
     title: "Analyze Test Failures",
     description:
-      "Analyze failed, timed-out, and flaky tests from an approved Playwright JSON report and group them by probable failure category.",
+      "Analyze failed, timed-out, and flaky tests from an approved Playwright JSON or JUnit XML report and group them by probable failure category.",
     inputSchema: {
       reportPath: z
         .string()
         .min(1)
         .describe(
-          "Path to the report relative to the approved reports directory, such as json/playwright-results.json.",
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json or junit/junit-results.xml.",
         ),
     },
   },
@@ -191,13 +191,13 @@ server.registerTool(
   {
     title: "Generate Bug Report",
     description:
-      "Generate a structured draft bug report for one failed, timed-out, or flaky test from an approved Playwright JSON report.",
+      "Generate a structured draft bug report for one failed, timed-out, or flaky test from an approved Playwright JSON or JUnit XML report.",
     inputSchema: {
       reportPath: z
         .string()
         .min(1)
         .describe(
-          "Path to the report relative to the approved reports directory.",
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json or junit/junit-results.xml.",
         ),
       testId: z
         .string()
@@ -246,13 +246,13 @@ server.registerTool(
   {
     title: "Generate QA Summary",
     description:
-      "Generate a complete QA execution summary containing metrics, failure analysis, quality risks, Markdown output, and an advisory release recommendation.",
+      "Generate a complete QA execution summary from an approved Playwright JSON or JUnit XML report, including metrics, failure analysis, quality risks, Markdown output, and an advisory release recommendation.",
     inputSchema: {
       reportPath: z
         .string()
         .min(1)
         .describe(
-          "Path to the report relative to the approved reports directory, such as json/playwright-results.json.",
+          "Path to the report relative to the approved reports directory, such as json/playwright-results.json or junit/junit-results.xml.",
         ),
     },
   },

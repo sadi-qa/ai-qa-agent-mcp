@@ -15,19 +15,42 @@ describe("listTestRunFiles", () => {
       sampleDataDirectory,
     );
 
-    expect(files).toHaveLength(1);
+    expect(files).toHaveLength(2);
 
-    expect(files[0]).toMatchObject({
+    const playwrightFile = files.find(
+      (file) =>
+        file.fileName === "playwright-results.json",
+    );
+
+    const junitFile = files.find(
+      (file) =>
+        file.fileName === "junit-results.xml",
+    );
+
+    expect(playwrightFile).toMatchObject({
       fileName: "playwright-results.json",
       format: "playwright-json",
     });
 
-    expect(files[0]?.filePath).toContain(
-      "sample-data",
-    );
+    expect(junitFile).toMatchObject({
+      fileName: "junit-results.xml",
+      format: "junit",
+    });
 
-    expect(files[0]?.sizeBytes).toBeGreaterThan(0);
-    expect(files[0]?.modifiedAt).toBeTruthy();
+    for (const file of files) {
+      expect(file.filePath).toContain(
+        "sample-data",
+      );
+
+      expect(file.sizeBytes).toBeGreaterThan(0);
+      expect(file.modifiedAt).toBeTruthy();
+    }
+
+    expect(
+      new Date(files[0]!.modifiedAt).getTime(),
+    ).toBeGreaterThanOrEqual(
+      new Date(files[1]!.modifiedAt).getTime(),
+    );
   });
 
   it("returns an empty array when no supported files exist", async () => {

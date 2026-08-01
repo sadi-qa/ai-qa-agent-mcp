@@ -3,8 +3,8 @@ import { relative } from "node:path";
 import type { ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 
 import { applicationConfig } from "../config/application-config.js";
-import { parsePlaywrightJsonReport } from "../parsers/playwright-json-parser.js";
 import { listTestRunFiles } from "../services/test-run-file-service.js";
+import { parseTestRunReport } from "../services/test-run-parser-service.js";
 
 export const latestTestRunResourceUri =
   "test-run://latest";
@@ -16,13 +16,11 @@ export async function readLatestTestRunResource(
     applicationConfig.reportsDirectory,
   );
 
-  const latestSupportedFile = files.find(
-    (file) => file.format === "playwright-json",
-  );
+  const latestSupportedFile = files[0];
 
   if (!latestSupportedFile) {
     throw new Error(
-      "No supported Playwright JSON test runs were found in the approved reports directory.",
+      "No supported Playwright JSON or JUnit XML test runs were found in the approved reports directory.",
     );
   }
 
@@ -35,7 +33,7 @@ export async function readLatestTestRunResource(
     );
   }
 
-  const testRun = await parsePlaywrightJsonReport(
+  const testRun = await parseTestRunReport(
     latestSupportedFile.filePath,
   );
 
