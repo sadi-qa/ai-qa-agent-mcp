@@ -38,5 +38,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run project validation
-        run: npm run check
+      - name: Run validation with coverage
+        run: npm run check:coverage

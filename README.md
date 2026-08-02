@@ -54,6 +54,7 @@ Both formats are converted into one normalized internal test-result model before
 - Zod
 - Fast XML Parser
 - Vitest
+- V8 code coverage
 - Playwright JSON
 - JUnit XML
 - MCP Inspector
@@ -119,7 +120,8 @@ ai-qa-agent-mcp/
 ├── package.json
 ├── README.md
 ├── tsconfig.build.json
-└── tsconfig.json
+├── tsconfig.json
+└── vitest.config.ts
 ```
 
 ## Development Commands
@@ -148,6 +150,12 @@ Run automated tests:
 npm test
 ```
 
+Run tests with coverage:
+
+```bash
+npm run test:coverage
+```
+
 Generate the production build:
 
 ```bash
@@ -158,6 +166,12 @@ Run type checking, automated tests, and the production build:
 
 ```bash
 npm run check
+```
+
+Run type checking, coverage validation, and the production build:
+
+```bash
+npm run check:coverage
 ```
 
 ## MCP Integration Testing
@@ -196,7 +210,28 @@ The workflow uses Node.js 24 and runs:
 
 ```bash
 npm ci
-npm run check
+npm run check:coverage
+```
+
+The workflow fails when type checking, tests, coverage thresholds, or the production build fail.
+
+## Coverage Thresholds
+
+The project enforces these minimum global coverage thresholds:
+
+| Metric | Minimum | Current |
+|---|---:|---:|
+| Statements | 80% | 82.99% |
+| Branches | 65% | 70.37% |
+| Functions | 90% | 92.68% |
+| Lines | 80% | 82.94% |
+
+Coverage reports are generated in text, JSON summary, and HTML formats.
+
+Generated reports are stored under:
+
+```text
+coverage/
 ```
 
 ## Example Report Paths
@@ -243,6 +278,7 @@ Current validation result:
 ```text
 17 test files passed
 53 tests passed
+Coverage thresholds passed
 Production build passed
 ```
 
@@ -250,4 +286,4 @@ Production build passed
 
 Version `0.1.0` is under active development.
 
-Implemented features include five MCP tools, one MCP resource, one MCP prompt, Playwright JSON support, JUnit XML support, unit and integration test coverage, and GitHub Actions CI validation.
+Implemented features include five MCP tools, one MCP resource, one MCP prompt, Playwright JSON support, JUnit XML support, unit and integration test coverage, enforced coverage thresholds, and GitHub Actions CI validation.
